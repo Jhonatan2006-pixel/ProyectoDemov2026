@@ -1,0 +1,29 @@
+<resources>
+
+    <string name="app_name">demov2026</string>
+
+    <!-- Login -->
+    <string name="login_title">Sign In</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="create_account">Create an account</string>
+
+    <!-- Register -->
+    <string name="register_title">Create Account</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="register_button">Register</string>
+    <string name="already_have_account">I already have an account</string>
+
+    <!-- Profile -->
+    <string name="my_profile">My Profile</string>
+    <string name="profile_photo">Profile photo</string>
+    <string name="profile_photo_description">Profile photo</string>
+    <string name="photo_question">Would you like to take a photo or select an image from the gallery?</string>
+    <string name="take_photo">Take photo</string>
+    <string name="gallery">Gallery</string>
+    <string name="logout">Sign Out</string>
+
+</resources>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mapa de Censos</title>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script>
+    function iniciarMapa() {
+
+        const ubicacionInicial = {
+            lat: 14.6349,
+            lng: -90.5069
+        };
+
+        const mapa = new google.maps.Map(
+            document.getElementById("map"),
+            {
+                zoom: 7,
+                center: ubicacionInicial
+            }
+        );
+    }
+</script>
+
+<script
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACyEt4StB3sNRR99WsjKZ93A_5KI_F5fk&callback=iniciarMapa">
+</script>
+
+</body>
+</html>
