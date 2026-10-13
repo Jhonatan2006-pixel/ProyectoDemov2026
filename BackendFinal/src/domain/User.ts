@@ -4,5 +4,6 @@ export interface User {
     email: string;
     telefono?: string;
     password: string;
+    rol?: string;
     created_at?: Date;
 }

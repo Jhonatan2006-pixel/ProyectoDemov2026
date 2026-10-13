@@ -42,14 +42,22 @@ CensoModel.init(
             allowNull: false
         },
 
+        // PostgreSQL devuelve los DECIMAL como texto y SQL Server como
+        // número: el get() hace que la API siempre responda un número
         latitud: {
             type: DataTypes.DECIMAL(10, 7),
-            allowNull: false
+            allowNull: false,
+            get() {
+                return Number(this.getDataValue("latitud"));
+            }
         },
 
         longitud: {
             type: DataTypes.DECIMAL(10, 7),
-            allowNull: false
+            allowNull: false,
+            get() {
+                return Number(this.getDataValue("longitud"));
+            }
         },
 
         tipo_carga: {

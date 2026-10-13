@@ -6,6 +6,17 @@ import { UsuarioRepository } from "../../infrastructure/repositories/UsuarioRepo
 
 const usuarioRepository = new UsuarioRepository();
 
+// El código que autoriza registrarse como administrador vive solo en el
+// servidor (ADMIN_CODE en el archivo .env). Si no está configurado,
+// nadie puede registrarse como administrador.
+const codigoAdminValido = (codigo: unknown): boolean => {
+    const esperado = process.env.ADMIN_CODE;
+
+    return !!esperado &&
+        typeof codigo === "string" &&
+        codigo.trim() === esperado;
+};
+
 export class AuthController {
 
     // ============================
@@ -19,7 +30,9 @@ export class AuthController {
                 nombre,
                 email,
                 telefono,
-                password
+                password,
+                rol,
+                codigo_admin
             } = req.body;
 
             // Validar campos obligatorios
@@ -27,6 +40,26 @@ export class AuthController {
                 return res.status(400).json({
                     success: false,
                     message: "Nombre, correo y contraseña son obligatorios",
+                    data: null
+                });
+            }
+
+            // Rol elegido en el registro: si no se envía, es censista
+            const rolSolicitado = String(rol || "CENSISTA").toUpperCase();
+
+            if (rolSolicitado !== "CENSISTA" && rolSolicitado !== "ADMIN") {
+                return res.status(400).json({
+                    success: false,
+                    message: "El rol seleccionado no es válido",
+                    data: null
+                });
+            }
+
+            // Para registrarse como administrador se exige el código
+            if (rolSolicitado === "ADMIN" && !codigoAdminValido(codigo_admin)) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Código de administrador incorrecto",
                     data: null
                 });
             }
@@ -53,7 +86,8 @@ export class AuthController {
                     nombre,
                     email,
                     telefono,
-                    password: passwordHash
+                    password: passwordHash,
+                    rol: rolSolicitado
                 });
 
             return res.status(201).json({
@@ -78,6 +112,29 @@ export class AuthController {
                 data: null
             });
         }
+    }
+
+
+    // ============================
+    // VERIFICAR CÓDIGO DE ADMINISTRADOR
+    // ============================
+    static async verificarCodigoAdmin(req: Request, res: Response) {
+
+        const { codigo } = req.body;
+
+        if (!codigoAdminValido(codigo)) {
+            return res.status(403).json({
+                success: false,
+                message: "Código de administrador incorrecto",
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Código de administrador correcto",
+            data: null
+        });
     }
 
 
