@@ -1,0 +1,9 @@
+# Variables de entorno con claves. Cada quien crea su propio .env
+# a partir de BackendFinal/.env.example
+.env
+
+# Dependencias de Node: se instalan con "npm install"
+node_modules/
+
+# Paquetes que se generan al desplegar las Lambdas
+Lambdas/**/*.zip
