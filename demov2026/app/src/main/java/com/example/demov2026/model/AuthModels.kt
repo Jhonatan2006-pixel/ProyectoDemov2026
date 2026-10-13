@@ -4,7 +4,21 @@ data class RegisterRequest(
     val nombre: String,
     val email: String,
     val telefono: String?,
-    val password: String
+    val password: String,
+    val rol: String = "CENSISTA",
+
+    // Solo se envía al registrarse como administrador
+    val codigo_admin: String? = null
+)
+
+// Código que autoriza registrarse como administrador
+data class CodigoAdminRequest(
+    val codigo: String
+)
+
+data class CodigoAdminResponse(
+    val success: Boolean,
+    val message: String
 )
 
 data class LoginRequest(

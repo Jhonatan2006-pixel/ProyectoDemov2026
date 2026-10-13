@@ -33,12 +33,18 @@ class LoginViewModel(
         )
     }
 
+    // Deja el formulario vacío para el siguiente inicio de sesión
+    fun limpiarEstado() {
+        _state.value = LoginState()
+    }
+
     fun onLoginClic() {
 
         viewModelScope.launch {
 
             _state.value = _state.value.copy(
-                mensaje = "Iniciando sesión..."
+                mensaje = "",
+                cargando = true
             )
 
             val resultado = repository.login(
@@ -58,6 +64,7 @@ class LoginViewModel(
 
                 _state.value = _state.value.copy(
                     mensaje = "Bienvenido ${usuarioYToken?.first?.nombre}",
+                    cargando = false,
                     loginExito = true,
                     rol = usuarioYToken?.first?.rol ?: ""
                 )
@@ -67,6 +74,7 @@ class LoginViewModel(
                 _state.value = _state.value.copy(
                     mensaje = resultado.exceptionOrNull()?.message
                         ?: "Credenciales incorrectas",
+                    cargando = false,
                     loginExito = false
                 )
             }

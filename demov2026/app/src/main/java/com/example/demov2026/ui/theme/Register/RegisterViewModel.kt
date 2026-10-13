@@ -7,7 +7,7 @@ import com.example.demov2026.model.RegisterState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.demov2026.data.local.UsuarioDao
+
 class RegisterViewModel : ViewModel() {
 
     private val repository = AuthRepository()
@@ -50,6 +50,105 @@ class RegisterViewModel : ViewModel() {
         )
     }
 
+    // ============================
+    // ROL
+    // ============================
+
+    fun onCensistaSeleccionado() {
+
+        _state.value = _state.value.copy(
+            rol = "CENSISTA",
+            codigoAdmin = ""
+        )
+    }
+
+    // El rol no cambia a ADMIN todavía: primero se pide el código
+    fun onAdminSeleccionado() {
+
+        if (_state.value.rol == "ADMIN") {
+            return
+        }
+
+        _state.value = _state.value.copy(
+            mostrarDialogoCodigo = true,
+            codigoIngresado = "",
+            mensajeCodigo = ""
+        )
+    }
+
+    fun onCodigoChange(nuevoCodigo: String) {
+
+        _state.value = _state.value.copy(
+            codigoIngresado = nuevoCodigo,
+            mensajeCodigo = ""
+        )
+    }
+
+    // Cerrar el cuadro sin verificar: el rol se queda como estaba
+    fun onCancelarCodigo() {
+
+        _state.value = _state.value.copy(
+            mostrarDialogoCodigo = false,
+            codigoIngresado = "",
+            verificandoCodigo = false,
+            mensajeCodigo = ""
+        )
+    }
+
+    fun onVerificarCodigo() {
+
+        val codigo = _state.value.codigoIngresado.trim()
+
+        if (codigo.isEmpty()) {
+
+            _state.value = _state.value.copy(
+                mensajeCodigo = "Ingrese el código de administrador"
+            )
+
+            return
+        }
+
+        viewModelScope.launch {
+
+            _state.value = _state.value.copy(
+                verificandoCodigo = true,
+                mensajeCodigo = ""
+            )
+
+            val resultado = repository.verificarCodigoAdmin(codigo)
+
+            // Si el usuario canceló mientras se verificaba, no se cambia nada
+            if (!_state.value.mostrarDialogoCodigo) {
+                return@launch
+            }
+
+            if (resultado.isSuccess) {
+
+                _state.value = _state.value.copy(
+                    rol = "ADMIN",
+                    codigoAdmin = codigo,
+                    mostrarDialogoCodigo = false,
+                    codigoIngresado = "",
+                    verificandoCodigo = false,
+                    mensajeCodigo = ""
+                )
+
+            } else {
+
+                _state.value = _state.value.copy(
+                    verificandoCodigo = false,
+                    mensajeCodigo = resultado.exceptionOrNull()?.message
+                        ?: "Código de administrador incorrecto"
+                )
+            }
+        }
+    }
+
+    // Deja el formulario vacío para el siguiente registro
+    fun limpiarEstado() {
+        _state.value = RegisterState()
+    }
+
     fun onRegisterClic() {
 
         val datos = _state.value
@@ -82,15 +181,23 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
 
             _state.value = datos.copy(
-                mensaje = "Registrando usuario...",
+                mensaje = "",
+                cargando = true,
                 registroExito = false
             )
 
+            // El backend vuelve a comprobar el código al registrar
             val resultado = repository.registrar(
                 nombre = datos.nombre,
                 email = datos.email,
                 password = datos.password,
-                telefono = datos.telefono
+                telefono = datos.telefono,
+                rol = datos.rol,
+                codigoAdmin = if (datos.rol == "ADMIN") {
+                    datos.codigoAdmin
+                } else {
+                    null
+                }
             )
 
             if (resultado.isSuccess) {

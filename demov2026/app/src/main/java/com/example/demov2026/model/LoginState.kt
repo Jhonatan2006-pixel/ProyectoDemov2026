@@ -4,6 +4,7 @@ data class LoginState(
     val email: String = "",
     val password: String = "",
     val mensaje: String = "",
+    val cargando: Boolean = false,
     val loginExito: Boolean = false,
     val rol: String = ""
 )

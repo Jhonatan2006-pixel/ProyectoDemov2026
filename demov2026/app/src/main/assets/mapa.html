@@ -27,6 +27,23 @@
 <div id="map"></div>
 
 <script>
+    let mapa = null;
+    let marcadores = [];
+    let agrupador = null;
+
+    // Censos recibidos desde Android antes de que el mapa estuviera listo
+    let censosPendientes = null;
+
+    // Marcador azul para distinguir los censos de carga masiva
+    const ICONO_MASIVO =
+        "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="27" height="40" viewBox="0 0 27 40">' +
+            '<path d="M13.5 0C6 0 0 6 0 13.5 0 23.6 13.5 40 13.5 40S27 23.6 27 13.5C27 6 21 0 13.5 0z" ' +
+            'fill="#1A73E8" stroke="#0B57D0"/>' +
+            '<circle cx="13.5" cy="13.5" r="5" fill="#ffffff"/>' +
+            '</svg>'
+        );
+
     function iniciarMapa() {
 
         const ubicacionInicial = {
@@ -34,15 +51,104 @@
             lng: -90.5069
         };
 
-        const mapa = new google.maps.Map(
+        mapa = new google.maps.Map(
             document.getElementById("map"),
             {
                 zoom: 7,
                 center: ubicacionInicial
             }
         );
+
+        if (censosPendientes) {
+            cargarCensos(
+                censosPendientes.censos,
+                censosPendientes.usarClusters
+            );
+            censosPendientes = null;
+        }
+    }
+
+    function limpiarMarcadores() {
+
+        if (agrupador) {
+            agrupador.clearMarkers();
+            agrupador = null;
+        }
+
+        marcadores.forEach(function (marcador) {
+            marcador.setMap(null);
+        });
+
+        marcadores = [];
+    }
+
+    // Llamada desde Android con la lista de censos.
+    // usarClusters = true agrupa los marcadores cercanos (clustering).
+    function cargarCensos(censos, usarClusters) {
+
+        if (!mapa) {
+            censosPendientes = {
+                censos: censos,
+                usarClusters: usarClusters
+            };
+            return;
+        }
+
+        limpiarMarcadores();
+
+        // Si la libreria de clustering no cargo, se muestran marcadores normales
+        const agrupar =
+            usarClusters && typeof markerClusterer !== "undefined";
+
+        const limites = new google.maps.LatLngBounds();
+
+        censos.forEach(function (censo) {
+
+            const posicion = {
+                lat: Number(censo.latitud),
+                lng: Number(censo.longitud)
+            };
+
+            if (!isFinite(posicion.lat) || !isFinite(posicion.lng)) {
+                return;
+            }
+
+            const marcador = new google.maps.Marker({
+                position: posicion,
+                title: censo.nombre + " " + censo.apellido,
+                icon: censo.tipo_carga === "MASIVA" ? ICONO_MASIVO : null,
+                map: agrupar ? null : mapa
+            });
+
+            // Android muestra el dialogo con los datos del censo
+            marcador.addListener("click", function () {
+                if (window.Android) {
+                    window.Android.mostrarCenso(censo.id);
+                }
+            });
+
+            marcadores.push(marcador);
+            limites.extend(posicion);
+        });
+
+        if (agrupar) {
+            agrupador = new markerClusterer.MarkerClusterer({
+                map: mapa,
+                markers: marcadores
+            });
+        }
+
+        if (marcadores.length === 1) {
+            mapa.setCenter(limites.getCenter());
+            mapa.setZoom(15);
+        } else if (marcadores.length > 1) {
+            mapa.fitBounds(limites);
+        }
     }
 </script>
+
+<!-- Libreria de clustering de Google Maps -->
+<script src="https://unpkg.com/@googlemaps/markerclusterer@2.6.2/dist/index.min.js"></script>
 
 <script
         async

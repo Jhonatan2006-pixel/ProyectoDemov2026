@@ -6,16 +6,23 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.CancellationSignal
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
 import com.example.demov2026.ui.theme.Censista.CapturarCensoScreen
 import com.example.demov2026.ui.theme.Censista.CensistaScreen
 import com.example.demov2026.ui.theme.Demov2026Theme
@@ -28,7 +35,6 @@ import com.example.demov2026.data.TokenManager
 import com.example.demov2026.ui.theme.Censista.CensoViewModel
 import com.example.demov2026.ui.theme.Admin.AdminScreen
 import com.example.demov2026.ui.theme.Admin.AdminViewModel
-import com.example.demov2026.ui.theme.Admin.ListaCensosScreen
 import com.example.demov2026.ui.theme.Admin.MapaCensosScreen
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +42,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
+        // La app dibuja detrás de las barras del sistema y los iconos
+        // de la barra de estado se adaptan al tema claro u oscuro
+        enableEdgeToEdge()
 
         setContent {
 
@@ -87,6 +97,12 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf<Double?>(null)
                 }
 
+                // Aviso para el censista mientras se busca la ubicación
+                // o cuando no fue posible obtenerla
+                var mensajeUbicacion by remember {
+                    mutableStateOf("")
+                }
+
                 fun obtenerUbicacion() {
 
                     val locationManager =
@@ -106,36 +122,56 @@ class MainActivity : ComponentActivity() {
                         permisoFine != PackageManager.PERMISSION_GRANTED &&
                         permisoCoarse != PackageManager.PERMISSION_GRANTED
                     ) {
+                        mensajeUbicacion = "Se necesita el permiso de ubicación"
                         return
                     }
 
-                    var ubicacion: Location? = null
-
                     try {
 
-                        if (
-                            locationManager.isProviderEnabled(
-                                LocationManager.GPS_PROVIDER
-                            )
-                        ) {
-                            ubicacion = locationManager.getLastKnownLocation(
-                                LocationManager.GPS_PROVIDER
-                            )
+                        // Proveedores activos: primero GPS y luego la red
+                        val proveedores = listOf(
+                            LocationManager.GPS_PROVIDER,
+                            LocationManager.NETWORK_PROVIDER
+                        ).filter { proveedor ->
+                            locationManager.isProviderEnabled(proveedor)
                         }
 
-                        if (ubicacion == null &&
-                            locationManager.isProviderEnabled(
-                                LocationManager.NETWORK_PROVIDER
-                            )
-                        ) {
-                            ubicacion = locationManager.getLastKnownLocation(
-                                LocationManager.NETWORK_PROVIDER
-                            )
+                        if (proveedores.isEmpty()) {
+                            mensajeUbicacion = "Active la ubicación del dispositivo"
+                            return
                         }
+
+                        val ubicacion: Location? =
+                            proveedores.firstNotNullOfOrNull { proveedor ->
+                                locationManager.getLastKnownLocation(proveedor)
+                            }
 
                         if (ubicacion != null) {
                             latitud = ubicacion.latitude
                             longitud = ubicacion.longitude
+                            mensajeUbicacion = ""
+                            return
+                        }
+
+                        // El dispositivo no tiene una ubicación reciente
+                        // guardada: se solicita una nueva
+                        mensajeUbicacion = "Buscando ubicación..."
+
+                        LocationManagerCompat.getCurrentLocation(
+                            locationManager,
+                            proveedores.first(),
+                            null as CancellationSignal?,
+                            ContextCompat.getMainExecutor(this@MainActivity)
+                        ) { nuevaUbicacion: Location? ->
+
+                            if (nuevaUbicacion != null) {
+                                latitud = nuevaUbicacion.latitude
+                                longitud = nuevaUbicacion.longitude
+                                mensajeUbicacion = ""
+                            } else {
+                                mensajeUbicacion =
+                                    "No se pudo obtener la ubicación. Intente de nuevo"
+                            }
                         }
 
                     } catch (e: SecurityException) {
@@ -156,156 +192,230 @@ class MainActivity : ComponentActivity() {
 
                         if (permisoFine || permisoCoarse) {
                             obtenerUbicacion()
+                        } else {
+                            mensajeUbicacion = "Se necesita el permiso de ubicación"
                         }
                     }
 
-                when (pantalla) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
 
-                    "capturarCenso" -> {
+                    when (pantalla) {
 
-                        CapturarCensoScreen(
+                        "capturarCenso" -> {
 
-                            onObtenerUbicacion = {
+                            CapturarCensoScreen(
 
-                                val permisoFine = ContextCompat.checkSelfPermission(
-                                    this@MainActivity,
-                                    Manifest.permission.ACCESS_FINE_LOCATION
-                                )
+                                onObtenerUbicacion = {
 
-                                val permisoCoarse = ContextCompat.checkSelfPermission(
-                                    this@MainActivity,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                )
-
-                                if (
-                                    permisoFine == PackageManager.PERMISSION_GRANTED ||
-                                    permisoCoarse == PackageManager.PERMISSION_GRANTED
-                                ) {
-
-                                    obtenerUbicacion()
-
-                                } else {
-
-                                    permisoUbicacionLauncher.launch(
-                                        arrayOf(
-                                            Manifest.permission.ACCESS_FINE_LOCATION,
-                                            Manifest.permission.ACCESS_COARSE_LOCATION
-                                        )
+                                    val permisoFine = ContextCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.ACCESS_FINE_LOCATION
                                     )
-                                }
-                            },
 
-                            onGuardarCenso = {
-                                    nombre,
-                                    apellido,
-                                    miembros,
-                                    televisiones ->
+                                    val permisoCoarse = ContextCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                    )
 
-                                censoViewModel.guardarCenso(
-                                    nombre = nombre,
-                                    apellido = apellido,
-                                    totalMiembros = miembros,
-                                    cantidadTelevisiones = televisiones,
-                                    latitud = latitud,
-                                    longitud = longitud
-                                )
-                            },
+                                    if (
+                                        permisoFine == PackageManager.PERMISSION_GRANTED ||
+                                        permisoCoarse == PackageManager.PERMISSION_GRANTED
+                                    ) {
 
-                            onRegresar = {
-                                pantalla = "censista"
-                            },
+                                        obtenerUbicacion()
 
-                            latitud = latitud,
-                            longitud = longitud,
-                            mensaje = censoState.mensaje
-                        )
-                    }
+                                    } else {
 
-                    "perfilCensista" -> {
+                                        permisoUbicacionLauncher.launch(
+                                            arrayOf(
+                                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                                Manifest.permission.ACCESS_COARSE_LOCATION
+                                            )
+                                        )
+                                    }
+                                },
 
-                        ProfileScreen(
-                            onCerrarSesion = {
-                                pantalla = "login"
-                            }
-                        )
-                    }
+                                onGuardarCenso = {
+                                        nombre,
+                                        apellido,
+                                        miembros,
+                                        televisiones ->
 
-                    "mapaCensos" -> {
+                                    censoViewModel.guardarCenso(
+                                        nombre = nombre,
+                                        apellido = apellido,
+                                        totalMiembros = miembros,
+                                        cantidadTelevisiones = televisiones,
+                                        latitud = latitud,
+                                        longitud = longitud
+                                    )
+                                },
 
-                        MapaCensosScreen()
-                    }
+                                onRegresar = {
+                                    pantalla = "censista"
+                                },
 
-                    "admin" -> {
+                                // El siguiente hogar tiene otra ubicación
+                                onCensoGuardado = {
+                                    latitud = null
+                                    longitud = null
+                                    mensajeUbicacion = ""
+                                },
 
-                        AdminScreen(
+                                latitud = latitud,
+                                longitud = longitud,
+                                mensajeUbicacion = mensajeUbicacion,
+                                mensaje = censoState.mensaje,
+                                cargando = censoState.cargando,
+                                guardadoExitoso = censoState.guardadoExitoso
+                            )
+                        }
 
-                            onVerCensos = {
-                                pantalla = "mapaCensos"
-                            },
+                        "perfilCensista" -> {
 
-                            onVerCensosMasivos = {
-                                pantalla = "mapaCensosMasivos"
-                            },
+                            ProfileScreen(
+                                onCerrarSesion = {
+                                    pantalla = "login"
+                                },
 
-                            onPerfil = {
-                                pantalla = "perfilAdmin"
-                            }
-                        )
-                    }
-
-                    "censista" -> {
-
-                        CensistaScreen(
-
-                            onCapturarCenso = {
-                                latitud = null
-                                longitud = null
-                                pantalla = "capturarCenso"
-                            },
-
-                            onPerfil = {
-                                pantalla = "perfilCensista"
-                            }
-                        )
-                    }
-
-                    "login" -> {
-
-                        LoginScreen(
-
-                            onLoginExitoso = { rol ->
-
-                                if (rol.equals("ADMIN", ignoreCase = true)) {
-                                    pantalla = "admin"
-                                } else {
+                                onRegresar = {
                                     pantalla = "censista"
                                 }
-                            },
+                            )
+                        }
 
-                            onRegistroClic = {
-                                pantalla = "registro"
-                            }
-                        )
-                    }
+                        "perfilAdmin" -> {
 
-                    "registro" -> {
+                            ProfileScreen(
+                                onCerrarSesion = {
+                                    pantalla = "login"
+                                },
 
-                        RegisterScreen(
+                                onRegresar = {
+                                    pantalla = "admin"
+                                }
+                            )
+                        }
 
-                            onVolverLogin = {
-                                pantalla = "login"
-                            }
-                        )
-                    }
+                        "mapaCensos" -> {
 
-                    "perfil" -> {
+                            MapaCensosScreen(
+                                titulo = "Censos capturados",
+                                censos = adminState.censos,
+                                cargando = adminState.cargando,
+                                mensaje = adminState.mensaje,
+                                usarClusters = true,
 
-                        ProfileScreen(
+                                onCargarCensos = {
+                                    adminViewModel.obtenerCensos()
+                                },
 
-                            onCerrarSesion = {
-                                pantalla = "login"
-                            }
-                        )
+                                onRegresar = {
+                                    pantalla = "admin"
+                                }
+                            )
+                        }
+
+                        "mapaCensosMasivos" -> {
+
+                            MapaCensosScreen(
+                                titulo = "Censos masivos",
+                                censos = adminState.censos,
+                                cargando = adminState.cargando,
+                                mensaje = adminState.mensaje,
+                                usarClusters = true,
+
+                                onCargarCensos = {
+                                    adminViewModel.obtenerCensosMasivos()
+                                },
+
+                                onRegresar = {
+                                    pantalla = "admin"
+                                }
+                            )
+                        }
+
+                        "admin" -> {
+
+                            AdminScreen(
+
+                                onVerCensos = {
+                                    pantalla = "mapaCensos"
+                                },
+
+                                onVerCensosMasivos = {
+                                    pantalla = "mapaCensosMasivos"
+                                },
+
+                                onPerfil = {
+                                    pantalla = "perfilAdmin"
+                                }
+                            )
+                        }
+
+                        "censista" -> {
+
+                            CensistaScreen(
+
+                                onCapturarCenso = {
+                                    latitud = null
+                                    longitud = null
+                                    mensajeUbicacion = ""
+                                    censoViewModel.limpiarEstado()
+                                    pantalla = "capturarCenso"
+                                },
+
+                                onPerfil = {
+                                    pantalla = "perfilCensista"
+                                }
+                            )
+                        }
+
+                        "login" -> {
+
+                            LoginScreen(
+
+                                modifier = Modifier.safeDrawingPadding(),
+
+                                onLoginExitoso = { rol ->
+
+                                    if (rol.equals("ADMIN", ignoreCase = true)) {
+                                        pantalla = "admin"
+                                    } else {
+                                        pantalla = "censista"
+                                    }
+                                },
+
+                                onRegistroClic = {
+                                    pantalla = "registro"
+                                }
+                            )
+                        }
+
+                        "registro" -> {
+
+                            RegisterScreen(
+
+                                modifier = Modifier.safeDrawingPadding(),
+
+                                onVolverLogin = {
+                                    pantalla = "login"
+                                }
+                            )
+                        }
+
+                        "perfil" -> {
+
+                            ProfileScreen(
+
+                                onCerrarSesion = {
+                                    pantalla = "login"
+                                }
+                            )
+                        }
                     }
                 }
             }

@@ -24,7 +24,23 @@ class AdminViewModel(
     private val _state = MutableStateFlow(AdminState())
     val state: StateFlow<AdminState> = _state
 
+    // Todos los censos: carga normal y carga masiva
     fun obtenerCensos() {
+        cargarCensos { token ->
+            repository.obtenerCensos(token)
+        }
+    }
+
+    // Solamente los censos de carga masiva
+    fun obtenerCensosMasivos() {
+        cargarCensos { token ->
+            repository.obtenerCensosMasivos(token)
+        }
+    }
+
+    private fun cargarCensos(
+        consulta: suspend (String) -> Result<List<CensoData>>
+    ) {
 
         val token = tokenManager.obtenerToken()
 
@@ -41,7 +57,7 @@ class AdminViewModel(
                 cargando = true
             )
 
-            val resultado = repository.obtenerCensos(token)
+            val resultado = consulta(token)
 
             if (resultado.isSuccess) {
 
@@ -50,7 +66,11 @@ class AdminViewModel(
                 _state.value = AdminState(
                     cargando = false,
                     censos = listaCensos,
-                    mensaje = "Censos obtenidos correctamente"
+                    mensaje = if (listaCensos.isEmpty()) {
+                        "No hay censos para mostrar"
+                    } else {
+                        "Censos obtenidos correctamente"
+                    }
                 )
 
             } else {

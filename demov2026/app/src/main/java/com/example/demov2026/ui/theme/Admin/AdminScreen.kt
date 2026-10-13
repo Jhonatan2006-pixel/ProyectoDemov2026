@@ -2,20 +2,23 @@ package com.example.demov2026.ui.theme.Admin
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.demov2026.ui.theme.OpcionPanel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(
     onVerCensos: () -> Unit,
@@ -23,50 +26,51 @@ fun AdminScreen(
     onPerfil: () -> Unit
 ) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Scaffold(
+        topBar = {
 
-        Text(
-            text = "Panel del Administrador",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Seleccione una opción"
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = onVerCensos,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Ver censos en mapa")
+            CenterAlignedTopAppBar(
+                title = {
+                    Text("Panel del Administrador")
+                }
+            )
         }
+    ) { paddingInterno ->
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onVerCensosMasivos,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingInterno)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Ver censos masivos")
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Seleccione una opción",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
-        OutlinedButton(
-            onClick = onPerfil,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Mi perfil")
+            OpcionPanel(
+                icono = Icons.Filled.Place,
+                titulo = "Ver censos en mapa",
+                descripcion = "Todos los censos capturados",
+                onClick = onVerCensos
+            )
+
+            OpcionPanel(
+                icono = Icons.Filled.LocationOn,
+                titulo = "Ver censos masivos",
+                descripcion = "Censos de carga masiva agrupados por zona",
+                onClick = onVerCensosMasivos
+            )
+
+            OpcionPanel(
+                icono = Icons.Filled.Person,
+                titulo = "Mi perfil",
+                descripcion = "Datos de la cuenta y foto de perfil",
+                onClick = onPerfil
+            )
         }
     }
 }

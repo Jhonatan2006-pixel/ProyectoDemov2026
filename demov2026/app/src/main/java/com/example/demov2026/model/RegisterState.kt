@@ -7,5 +7,18 @@ data class RegisterState(
     val password: String = "",
     val confirmarPassword: String = "",
     val mensaje: String = "",
-    val registroExito: Boolean = false
+    val cargando: Boolean = false,
+    val registroExito: Boolean = false,
+
+    // Rol elegido: CENSISTA o ADMIN
+    val rol: String = "CENSISTA",
+
+    // Código de administrador ya verificado por el backend
+    val codigoAdmin: String = "",
+
+    // Cuadro donde se escribe el código de administrador
+    val mostrarDialogoCodigo: Boolean = false,
+    val codigoIngresado: String = "",
+    val verificandoCodigo: Boolean = false,
+    val mensajeCodigo: String = ""
 )

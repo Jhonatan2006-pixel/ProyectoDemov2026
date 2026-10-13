@@ -8,6 +8,7 @@
     <string name="password">Contraseña</string>
     <string name="login_button">Ingresar</string>
     <string name="create_account">Crear una cuenta</string>
+    <string name="app_subtitle">Censo de hogares</string>
 
     <!-- Registro -->
     <string name="register_title">Crear Cuenta</string>
@@ -16,6 +17,15 @@
     <string name="confirm_password">Confirmar contraseña</string>
     <string name="register_button">Registrarse</string>
     <string name="already_have_account">Ya tengo una cuenta</string>
+    <string name="role_label">Rol</string>
+    <string name="role_censista">Censista</string>
+    <string name="role_admin">Administrador</string>
+    <string name="admin_code_title">Código de administrador</string>
+    <string name="admin_code_text">Ingresa el código que confirma que fuiste aprobado como administrador.</string>
+    <string name="admin_code_label">Código</string>
+    <string name="admin_code_verified">Código de administrador verificado</string>
+    <string name="verify">Verificar</string>
+    <string name="cancel">Cancelar</string>
 
     <!-- Perfil -->
     <string name="my_profile">Mi Perfil</string>
@@ -25,5 +35,7 @@
     <string name="take_photo">Tomar foto</string>
     <string name="gallery">Galería</string>
     <string name="logout">Cerrar Sesión</string>
+    <string name="back">Regresar</string>
+    <string name="change_photo_hint">Toca la foto para cambiarla</string>
 
 </resources>

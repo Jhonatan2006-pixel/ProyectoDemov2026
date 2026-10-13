@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
+// Tamaño máximo, en píxeles, del lado más largo de la foto de perfil
+private const val LADO_MAXIMO_FOTO = 800
+
 class ProfileViewModel(
     private val tokenManager: TokenManager,
     usuarioDao: UsuarioDao
@@ -24,10 +27,6 @@ class ProfileViewModel(
     private val _state = MutableStateFlow(ProfileState())
 
     val state: StateFlow<ProfileState> = _state
-
-    init {
-        cargarPerfil()
-    }
 
     fun cargarPerfil() {
 
@@ -123,7 +122,27 @@ class ProfileViewModel(
     fun onFotoTomada(bitmap: Bitmap) {
 
         _state.value = _state.value.copy(
-            fotoPerfil = bitmap
+            fotoPerfil = reducirFoto(bitmap)
+        )
+    }
+
+    // Las fotos de la galería pueden pesar varios MB: se reducen
+    // para que el envío y la carga del perfil sean rápidos
+    private fun reducirFoto(bitmap: Bitmap): Bitmap {
+
+        val ladoMayor = maxOf(bitmap.width, bitmap.height)
+
+        if (ladoMayor <= LADO_MAXIMO_FOTO) {
+            return bitmap
+        }
+
+        val escala = LADO_MAXIMO_FOTO.toFloat() / ladoMayor
+
+        return Bitmap.createScaledBitmap(
+            bitmap,
+            (bitmap.width * escala).toInt(),
+            (bitmap.height * escala).toInt(),
+            true
         )
     }
 

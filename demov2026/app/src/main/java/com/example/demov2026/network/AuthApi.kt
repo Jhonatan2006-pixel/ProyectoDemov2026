@@ -1,5 +1,7 @@
 package com.example.demov2026.network
 
+import com.example.demov2026.model.CodigoAdminRequest
+import com.example.demov2026.model.CodigoAdminResponse
 import com.example.demov2026.model.FotoRequest
 import com.example.demov2026.model.FotoResponse
 import com.example.demov2026.model.LoginRequest
@@ -21,6 +23,11 @@ interface AuthApi {
     suspend fun register(
         @Body request: RegisterRequest
     ): RegisterResponse
+
+    @POST("api/auth/verificar-codigo-admin")
+    suspend fun verificarCodigoAdmin(
+        @Body request: CodigoAdminRequest
+    ): CodigoAdminResponse
 
     @POST("api/auth/login")
     suspend fun login(
@@ -46,6 +53,11 @@ interface AuthApi {
 
     @GET("api/censos")
     suspend fun obtenerCensos(
+        @Header("Authorization") token: String
+    ): CensosResponse
+
+    @GET("api/censos/masivos")
+    suspend fun obtenerCensosMasivos(
         @Header("Authorization") token: String
     ): CensosResponse
 }

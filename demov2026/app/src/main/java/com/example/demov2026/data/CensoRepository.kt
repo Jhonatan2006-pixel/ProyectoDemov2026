@@ -34,7 +34,7 @@ class CensoRepository {
 
             Result.failure(
                 Exception(
-                    e.message ?: "Error al registrar el censo"
+                    mensajeDeError(e, "Error al registrar el censo")
                 )
             )
         }
@@ -65,7 +65,38 @@ class CensoRepository {
 
             Result.failure(
                 Exception(
-                    e.message ?: "Error al obtener los censos"
+                    mensajeDeError(e, "Error al obtener los censos")
+                )
+            )
+        }
+    }
+
+    suspend fun obtenerCensosMasivos(
+        token: String
+    ): Result<List<CensoData>> {
+
+        return try {
+
+            val response = RetrofitClient.authApi.obtenerCensosMasivos(
+                token = "Bearer $token"
+            )
+
+            if (response.success) {
+
+                Result.success(response.data)
+
+            } else {
+
+                Result.failure(
+                    Exception(response.message)
+                )
+            }
+
+        } catch (e: Exception) {
+
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "Error al obtener los censos masivos")
                 )
             )
         }

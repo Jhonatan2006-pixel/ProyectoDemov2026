@@ -2,6 +2,7 @@ package com.example.demov2026.data
 
 import com.example.demov2026.data.local.UsuarioDao
 import com.example.demov2026.data.local.UsuarioEntity
+import com.example.demov2026.model.CodigoAdminRequest
 import com.example.demov2026.model.FotoRequest
 import com.example.demov2026.model.LoginRequest
 import com.example.demov2026.model.RegisterRequest
@@ -63,7 +64,11 @@ class AuthRepository(
 
         } catch (e: Exception) {
 
-            Result.failure(e)
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "Error al iniciar sesión")
+                )
+            )
         }
     }
 
@@ -71,7 +76,9 @@ class AuthRepository(
         nombre: String,
         email: String,
         password: String,
-        telefono: String
+        telefono: String,
+        rol: String = "CENSISTA",
+        codigoAdmin: String? = null
     ): Result<UsuarioResponse> {
 
         return try {
@@ -81,7 +88,9 @@ class AuthRepository(
                     nombre = nombre,
                     email = email,
                     telefono = telefono,
-                    password = password
+                    password = password,
+                    rol = rol,
+                    codigo_admin = codigoAdmin
                 )
             )
 
@@ -98,7 +107,45 @@ class AuthRepository(
 
         } catch (e: Exception) {
 
-            Result.failure(e)
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "Error al registrar el usuario")
+                )
+            )
+        }
+    }
+
+    // Comprobar en el backend el código para registrarse como administrador
+    suspend fun verificarCodigoAdmin(
+        codigo: String
+    ): Result<String> {
+
+        return try {
+
+            val response = authApi.verificarCodigoAdmin(
+                CodigoAdminRequest(
+                    codigo = codigo
+                )
+            )
+
+            if (response.success) {
+
+                Result.success(response.message)
+
+            } else {
+
+                Result.failure(
+                    Exception(response.message)
+                )
+            }
+
+        } catch (e: Exception) {
+
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "No se pudo verificar el código")
+                )
+            )
         }
     }
 
@@ -125,7 +172,11 @@ class AuthRepository(
 
         } catch (e: Exception) {
 
-            Result.failure(e)
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "Error al cargar el perfil")
+                )
+            )
         }
     }
 
@@ -157,7 +208,11 @@ class AuthRepository(
 
         } catch (e: Exception) {
 
-            Result.failure(e)
+            Result.failure(
+                Exception(
+                    mensajeDeError(e, "Error al guardar la foto")
+                )
+            )
         }
     }
 
