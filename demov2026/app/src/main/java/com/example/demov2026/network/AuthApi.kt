@@ -4,6 +4,7 @@ import com.example.demov2026.model.CodigoAdminRequest
 import com.example.demov2026.model.CodigoAdminResponse
 import com.example.demov2026.model.FotoRequest
 import com.example.demov2026.model.FotoResponse
+import com.example.demov2026.model.LoginFacialRequest
 import com.example.demov2026.model.LoginRequest
 import com.example.demov2026.model.LoginResponse
 import com.example.demov2026.model.ProfileResponse
@@ -32,6 +33,11 @@ interface AuthApi {
     @POST("api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
+    ): LoginResponse
+
+    @POST("api/auth/login-facial")
+    suspend fun loginFacial(
+        @Body request: LoginFacialRequest
     ): LoginResponse
 
     @GET("api/auth/profile")

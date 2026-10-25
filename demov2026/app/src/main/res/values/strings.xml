@@ -1,16 +1,27 @@
 <resources>
 
+    <!-- General -->
     <string name="app_name">demov2026</string>
+    <string name="select_option">Select an option</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="verify">Verify</string>
 
     <!-- Login -->
     <string name="login_title">Sign In</string>
+    <string name="app_subtitle">Household census</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login_button">Sign In</string>
     <string name="create_account">Create an account</string>
-    <string name="app_subtitle">Household census</string>
 
-    <!-- Register -->
+    <!-- Login con rostro -->
+    <string name="face_login_button">Sign in with my face</string>
+    <string name="face_login_needs_email">Enter your email to sign in with your face</string>
+    <string name="face_login_or">or</string>
+
+    <!-- Registro -->
     <string name="register_title">Create Account</string>
     <string name="name">Name</string>
     <string name="phone">Phone</string>
@@ -24,18 +35,107 @@
     <string name="admin_code_text">Enter the code that confirms you were approved as an administrator.</string>
     <string name="admin_code_label">Code</string>
     <string name="admin_code_verified">Administrator code verified</string>
-    <string name="verify">Verify</string>
-    <string name="cancel">Cancel</string>
 
-    <!-- Profile -->
+    <!-- Perfil -->
     <string name="my_profile">My Profile</string>
+    <string name="my_profile_option_desc">Account details and profile photo</string>
     <string name="profile_photo">Profile photo</string>
     <string name="profile_photo_description">Profile photo</string>
     <string name="photo_question">Would you like to take a photo or select an image from the gallery?</string>
     <string name="take_photo">Take photo</string>
     <string name="gallery">Gallery</string>
     <string name="logout">Sign Out</string>
-    <string name="back">Back</string>
     <string name="change_photo_hint">Tap the photo to change it</string>
+
+    <!-- Administrador -->
+    <string name="admin_panel_title">Administrator Panel</string>
+    <string name="admin_map_option">View census map</string>
+    <string name="admin_map_option_desc">All captured censuses</string>
+    <string name="admin_bulk_option">View bulk censuses</string>
+    <string name="admin_bulk_option_desc">Bulk-loaded censuses grouped by area</string>
+    <string name="map_all_title">Captured censuses</string>
+    <string name="map_bulk_title">Bulk censuses</string>
+    <string name="map_loading">Loading censuses…</string>
+    <string name="map_count">%1$d censuses on the map</string>
+    <string name="census_details_title">Census details</string>
+    <string name="census_full_name" translatable="false">%1$s %2$s</string>
+    <string name="census_detail_name">Name: %1$s</string>
+    <string name="census_detail_last_name">Last name: %1$s</string>
+    <string name="census_detail_members">Total members: %1$d</string>
+    <string name="census_detail_tvs">Number of TVs: %1$d</string>
+    <string name="census_detail_load_type">Load type: %1$s</string>
+    <string name="census_detail_latitude">Latitude: %1$s</string>
+    <string name="census_detail_longitude">Longitude: %1$s</string>
+    <string name="load_type_normal">Normal</string>
+    <string name="load_type_bulk">Bulk</string>
+
+    <!-- Censista -->
+    <string name="censista_panel_title">Census Taker Panel</string>
+    <string name="capture_option">Capture census</string>
+    <string name="capture_option_desc">Record the data of a household</string>
+    <string name="household_data">Household data</string>
+    <string name="last_name">Last name</string>
+    <string name="total_members">Total members</string>
+    <string name="tv_count">Number of TVs</string>
+    <string name="household_location">Household location</string>
+    <string name="location_obtained">Location obtained successfully</string>
+    <string name="latitude_value">Latitude: %1$s</string>
+    <string name="longitude_value">Longitude: %1$s</string>
+    <string name="location_pending">Location pending</string>
+    <string name="update_location">Update location</string>
+    <string name="get_location">Get location</string>
+    <string name="save_census">Save census</string>
+    <string name="location_permission_needed">Location permission is required</string>
+    <string name="location_enable_device">Turn on the device location</string>
+    <string name="location_searching">Searching for location…</string>
+    <string name="location_failed">Could not get the location. Try again</string>
+
+    <!-- Mensajes -->
+    <string name="msg_complete_fields">Complete all fields</string>
+    <string name="msg_invalid_members">The total members is not valid</string>
+    <string name="msg_invalid_tvs">The number of TVs is not valid</string>
+    <string name="msg_get_location_first">Get the location first</string>
+    <string name="msg_no_session">No active session found</string>
+    <string name="msg_census_saved">Census saved successfully</string>
+    <string name="msg_no_censuses">There are no censuses to show</string>
+    <string name="msg_no_user">No signed-in user</string>
+    <string name="msg_no_photo">There is no photo to save</string>
+    <string name="msg_saving_photo">Saving photo…</string>
+    <string name="msg_photo_saved">Profile photo saved successfully</string>
+    <string name="msg_logged_out">Signed out</string>
+    <string name="msg_enter_admin_code">Enter the administrator code</string>
+    <string name="msg_passwords_mismatch">Passwords do not match</string>
+    <string name="msg_user_registered">User registered successfully</string>
+    <string name="msg_login_success">Signed in successfully</string>
+
+    <!-- Errores -->
+    <string name="error_no_connection">Could not connect to the server</string>
+    <string name="error_generic">Something went wrong. Try again</string>
+    <string name="error_login">Could not sign in</string>
+    <string name="error_register">Could not register the user</string>
+    <string name="error_verify_code">Could not verify the code</string>
+    <string name="error_profile">Could not load the profile</string>
+    <string name="error_save_photo">Could not save the photo</string>
+    <string name="error_save_census">Could not save the census</string>
+    <string name="error_load_censuses">Could not load the censuses</string>
+    <string name="error_load_bulk">Could not load the bulk censuses</string>
+    <string name="error_credentials">Incorrect email or password</string>
+    <string name="error_email_password_required">Email and password are required</string>
+    <string name="error_required_fields">Name, email and password are required</string>
+    <string name="error_email_registered">The email is already registered</string>
+    <string name="error_admin_code">Incorrect administrator code</string>
+    <string name="error_invalid_role">The selected role is not valid</string>
+    <string name="error_session">Your session expired. Sign in again</string>
+    <string name="error_only_censistas">Only census takers can do this</string>
+    <string name="error_only_admins">Only administrators can do this</string>
+    <string name="error_census_data_required">All census data is required</string>
+    <string name="error_invalid_amounts">The amounts entered are not valid</string>
+    <string name="error_no_photo_received">No photo was received</string>
+    <string name="error_user_not_found">User not found</string>
+    <string name="error_face_login">Could not sign in with your face</string>
+    <string name="error_face_no_match">Your face does not match the profile photo</string>
+    <string name="error_face_no_profile_photo">This user has no profile photo to compare with</string>
+    <string name="error_face_not_detected">No face was detected in the photo</string>
+    <string name="error_face_service">The face recognition service is not available</string>
 
 </resources>

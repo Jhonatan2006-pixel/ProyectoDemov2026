@@ -1,5 +1,7 @@
 package com.example.demov2026.ui.theme.Profile
 
+import com.example.demov2026.data.textoDeError
+import com.example.demov2026.R
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -41,7 +43,7 @@ class ProfileViewModel(
                     nombre = usuarioLocal.nombre,
                     email = usuarioLocal.email,
                     telefono = usuarioLocal.telefono ?: "",
-                    mensaje = "",
+                    mensaje = null,
                     fotoPerfil = _state.value.fotoPerfil
                 )
             }
@@ -53,7 +55,7 @@ class ProfileViewModel(
 
                 if (usuarioLocal == null) {
                     _state.value = _state.value.copy(
-                        mensaje = "No hay usuario autenticado"
+                        mensaje = R.string.msg_no_user
                     )
                 }
 
@@ -98,7 +100,7 @@ class ProfileViewModel(
                         nombre = usuario.nombre,
                         email = usuario.email,
                         telefono = usuario.telefono ?: "",
-                        mensaje = "",
+                        mensaje = null,
                         fotoPerfil = fotoBitmap
                     )
                 }
@@ -110,8 +112,7 @@ class ProfileViewModel(
                 if (usuarioLocal == null) {
 
                     _state.value = _state.value.copy(
-                        mensaje = resultado.exceptionOrNull()?.message
-                            ?: "Error al cargar el perfil"
+                        mensaje = resultado.exceptionOrNull().textoDeError(R.string.error_profile)
                     )
                 }
             }
@@ -172,7 +173,7 @@ class ProfileViewModel(
             if (token == null) {
 
                 _state.value = _state.value.copy(
-                    mensaje = "No hay usuario autenticado"
+                    mensaje = R.string.msg_no_user
                 )
 
                 return@launch
@@ -183,7 +184,7 @@ class ProfileViewModel(
             if (fotoBytes == null) {
 
                 _state.value = _state.value.copy(
-                    mensaje = "No hay ninguna foto para guardar"
+                    mensaje = R.string.msg_no_photo
                 )
 
                 return@launch
@@ -196,7 +197,7 @@ class ProfileViewModel(
             )
 
             _state.value = _state.value.copy(
-                mensaje = "Guardando foto..."
+                mensaje = R.string.msg_saving_photo
             )
 
             val resultado = repository.guardarFoto(
@@ -207,14 +208,13 @@ class ProfileViewModel(
             if (resultado.isSuccess) {
 
                 _state.value = _state.value.copy(
-                    mensaje = "Foto de perfil guardada correctamente"
+                    mensaje = R.string.msg_photo_saved
                 )
 
             } else {
 
                 _state.value = _state.value.copy(
-                    mensaje = resultado.exceptionOrNull()?.message
-                        ?: "Error al guardar la foto"
+                    mensaje = resultado.exceptionOrNull().textoDeError(R.string.error_save_photo)
                 )
             }
         }
@@ -243,7 +243,7 @@ class ProfileViewModel(
             repository.cerrarSesion()
 
             _state.value = ProfileState(
-                mensaje = "Sesión cerrada"
+                mensaje = R.string.msg_logged_out
             )
         }
     }

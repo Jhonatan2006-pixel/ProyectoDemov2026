@@ -1,10 +1,14 @@
 package com.example.demov2026.data
 
+import androidx.annotation.StringRes
+import com.example.demov2026.R
 import com.example.demov2026.data.local.UsuarioDao
 import com.example.demov2026.data.local.UsuarioEntity
 import com.example.demov2026.model.CodigoAdminRequest
 import com.example.demov2026.model.FotoRequest
+import com.example.demov2026.model.LoginFacialRequest
 import com.example.demov2026.model.LoginRequest
+import com.example.demov2026.model.LoginResponse
 import com.example.demov2026.model.RegisterRequest
 import com.example.demov2026.model.UsuarioResponse
 import com.example.demov2026.network.RetrofitClient
@@ -29,47 +33,77 @@ class AuthRepository(
                 )
             )
 
-            if (
-                response.success &&
-                response.data != null &&
-                response.token != null
-            ) {
-
-                val usuario = response.data
-
-                // Guardar el usuario localmente con Room
-                usuarioDao?.guardarUsuario(
-                    UsuarioEntity(
-                        id = usuario.id,
-                        nombre = usuario.nombre,
-                        email = usuario.email,
-                        telefono = usuario.telefono,
-                        rol = usuario.rol
-                    )
-                )
-
-                Result.success(
-                    Pair(
-                        usuario,
-                        response.token
-                    )
-                )
-
-            } else {
-
-                Result.failure(
-                    Exception(response.message)
-                )
-            }
+            procesarLogin(response, R.string.error_login)
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al iniciar sesión")
+                errorApp(e, R.string.error_login)
+            )
+        }
+    }
+
+    // Login con rostro: el backend compara la selfie con la foto de perfil
+    // (Lambda compareFaces) y responde igual que el login normal
+    suspend fun loginFacial(
+        email: String,
+        fotoBase64: String
+    ): Result<Pair<UsuarioResponse, String>> {
+
+        return try {
+
+            val response = authApi.loginFacial(
+                LoginFacialRequest(
+                    email = email,
+                    foto = fotoBase64
+                )
+            )
+
+            procesarLogin(response, R.string.error_face_login)
+
+        } catch (e: Exception) {
+
+            Result.failure(
+                errorApp(e, R.string.error_face_login)
+            )
+        }
+    }
+
+    private suspend fun procesarLogin(
+        response: LoginResponse,
+        @StringRes porDefecto: Int
+    ): Result<Pair<UsuarioResponse, String>> {
+
+        if (
+            response.success &&
+            response.data != null &&
+            response.token != null
+        ) {
+
+            val usuario = response.data
+
+            // Guardar el usuario localmente con Room
+            usuarioDao?.guardarUsuario(
+                UsuarioEntity(
+                    id = usuario.id,
+                    nombre = usuario.nombre,
+                    email = usuario.email,
+                    telefono = usuario.telefono,
+                    rol = usuario.rol
+                )
+            )
+
+            return Result.success(
+                Pair(
+                    usuario,
+                    response.token
                 )
             )
         }
+
+        return Result.failure(
+            ErrorApp(mensajeDelServidor(response.message, porDefecto))
+        )
     }
 
     suspend fun registrar(
@@ -101,16 +135,14 @@ class AuthRepository(
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_register))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al registrar el usuario")
-                )
+                errorApp(e, R.string.error_register)
             )
         }
     }
@@ -135,16 +167,14 @@ class AuthRepository(
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_verify_code))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "No se pudo verificar el código")
-                )
+                errorApp(e, R.string.error_verify_code)
             )
         }
     }
@@ -166,16 +196,14 @@ class AuthRepository(
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_profile))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al cargar el perfil")
-                )
+                errorApp(e, R.string.error_profile)
             )
         }
     }
@@ -202,16 +230,14 @@ class AuthRepository(
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_save_photo))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al guardar la foto")
-                )
+                errorApp(e, R.string.error_save_photo)
             )
         }
     }

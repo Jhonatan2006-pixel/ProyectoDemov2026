@@ -1,5 +1,8 @@
 package com.example.demov2026.ui.theme.Admin
 
+import androidx.annotation.StringRes
+import com.example.demov2026.R
+import androidx.compose.ui.res.stringResource
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
@@ -63,7 +66,7 @@ fun MapaCensosScreen(
     titulo: String,
     censos: List<CensoData>,
     cargando: Boolean,
-    mensaje: String,
+    @StringRes mensaje: Int?,
     usarClusters: Boolean,
     onCargarCensos: () -> Unit,
     onRegresar: () -> Unit
@@ -98,7 +101,7 @@ fun MapaCensosScreen(
             },
 
             title = {
-                Text("Datos del censo")
+                Text(stringResource(R.string.census_details_title))
             },
 
             text = {
@@ -106,22 +109,22 @@ fun MapaCensosScreen(
                 Column {
 
                     Text(
-                        text = "${censo.nombre} ${censo.apellido}",
+                        text = stringResource(R.string.census_full_name, censo.nombre, censo.apellido),
                         style = MaterialTheme.typography.titleMedium
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Nombre: ${censo.nombre}")
-                    Text("Apellido: ${censo.apellido}")
-                    Text("Total de miembros: ${censo.total_miembros}")
-                    Text("Cantidad de televisiones: ${censo.cantidad_televisiones}")
+                    Text(stringResource(R.string.census_detail_name, censo.nombre))
+                    Text(stringResource(R.string.census_detail_last_name, censo.apellido))
+                    Text(stringResource(R.string.census_detail_members, censo.total_miembros))
+                    Text(stringResource(R.string.census_detail_tvs, censo.cantidad_televisiones))
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Tipo de carga: ${censo.tipo_carga}")
-                    Text("Latitud: ${censo.latitud}")
-                    Text("Longitud: ${censo.longitud}")
+                    Text(stringResource(R.string.census_detail_load_type, stringResource(if (censo.tipo_carga == "MASIVA") R.string.load_type_bulk else R.string.load_type_normal)))
+                    Text(stringResource(R.string.census_detail_latitude, censo.latitud.toString()))
+                    Text(stringResource(R.string.census_detail_longitude, censo.longitud.toString()))
                 }
             },
 
@@ -132,7 +135,7 @@ fun MapaCensosScreen(
                         censoSeleccionado = null
                     }
                 ) {
-                    Text("Cerrar")
+                    Text(stringResource(R.string.close))
                 }
             }
         )
@@ -153,7 +156,7 @@ fun MapaCensosScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -229,9 +232,9 @@ fun MapaCensosScreen(
             )
 
             val textoEstado = when {
-                cargando -> "Cargando censos..."
-                censos.isNotEmpty() -> "${censos.size} censos en el mapa"
-                else -> mensaje
+                cargando -> stringResource(R.string.map_loading)
+                censos.isNotEmpty() -> stringResource(R.string.map_count, censos.size)
+                else -> mensaje?.let { stringResource(it) } ?: ""
             }
 
             if (textoEstado.isNotEmpty()) {

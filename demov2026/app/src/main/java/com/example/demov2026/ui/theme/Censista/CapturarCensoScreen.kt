@@ -1,5 +1,8 @@
 package com.example.demov2026.ui.theme.Censista
 
+import androidx.annotation.StringRes
+import com.example.demov2026.R
+import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,8 +62,8 @@ fun CapturarCensoScreen(
     onCensoGuardado: () -> Unit,
     latitud: Double?,
     longitud: Double?,
-    mensajeUbicacion: String,
-    mensaje: String,
+    @StringRes mensajeUbicacion: Int?,
+    @StringRes mensaje: Int?,
     cargando: Boolean,
     guardadoExitoso: Boolean
 ) {
@@ -93,7 +96,7 @@ fun CapturarCensoScreen(
 
             TopAppBar(
                 title = {
-                    Text("Capturar censo")
+                    Text(stringResource(R.string.capture_option))
                 },
 
                 navigationIcon = {
@@ -103,7 +106,7 @@ fun CapturarCensoScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Regresar"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -132,14 +135,14 @@ fun CapturarCensoScreen(
                 ) {
 
                     Text(
-                        text = "Datos del hogar",
+                        text = stringResource(R.string.household_data),
                         style = MaterialTheme.typography.titleMedium
                     )
 
                     OutlinedTextField(
                         value = nombre,
                         onValueChange = { nombre = it },
-                        label = { Text("Nombre") },
+                        label = { Text(stringResource(R.string.name)) },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
@@ -151,7 +154,7 @@ fun CapturarCensoScreen(
                     OutlinedTextField(
                         value = apellido,
                         onValueChange = { apellido = it },
-                        label = { Text("Apellido") },
+                        label = { Text(stringResource(R.string.last_name)) },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words,
                             imeAction = ImeAction.Next
@@ -167,7 +170,7 @@ fun CapturarCensoScreen(
                                 totalMiembros = it
                             }
                         },
-                        label = { Text("Total de miembros") },
+                        label = { Text(stringResource(R.string.total_members)) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
@@ -183,7 +186,7 @@ fun CapturarCensoScreen(
                                 cantidadTelevisiones = it
                             }
                         },
-                        label = { Text("Cantidad de televisiones") },
+                        label = { Text(stringResource(R.string.tv_count)) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Done
@@ -222,33 +225,31 @@ fun CapturarCensoScreen(
                         Column {
 
                             Text(
-                                text = "Ubicación del hogar",
+                                text = stringResource(R.string.household_location),
                                 style = MaterialTheme.typography.titleMedium
                             )
 
                             if (ubicacionLista) {
 
                                 Text(
-                                    text = "Ubicación obtenida correctamente",
+                                    text = stringResource(R.string.location_obtained),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
 
                                 Text(
-                                    text = "Latitud: $latitud",
+                                    text = stringResource(R.string.latitude_value, latitud.toString()),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
 
                                 Text(
-                                    text = "Longitud: $longitud",
+                                    text = stringResource(R.string.longitude_value, longitud.toString()),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
 
                             } else {
 
                                 Text(
-                                    text = mensajeUbicacion.ifEmpty {
-                                        "Ubicación pendiente"
-                                    },
+                                    text = stringResource(mensajeUbicacion ?: R.string.location_pending),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -264,9 +265,9 @@ fun CapturarCensoScreen(
                     ) {
                         Text(
                             if (ubicacionLista) {
-                                "Actualizar ubicación"
+                                stringResource(R.string.update_location)
                             } else {
-                                "Obtener ubicación"
+                                stringResource(R.string.get_location)
                             }
                         )
                     }
@@ -274,7 +275,7 @@ fun CapturarCensoScreen(
             }
 
             // Resultado del último intento de guardado
-            if (mensaje.isNotEmpty()) {
+            if (mensaje != null) {
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -293,7 +294,7 @@ fun CapturarCensoScreen(
                 ) {
 
                     Text(
-                        text = mensaje,
+                        text = stringResource(mensaje),
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -324,7 +325,7 @@ fun CapturarCensoScreen(
 
                 } else {
 
-                    Text("Guardar censo")
+                    Text(stringResource(R.string.save_census))
                 }
             }
         }

@@ -26,6 +26,12 @@ data class LoginRequest(
     val password: String
 )
 
+// Login con rostro: la selfie se compara con la foto de perfil
+data class LoginFacialRequest(
+    val email: String,
+    val foto: String
+)
+
 data class UsuarioResponse(
     val id: Int,
     val nombre: String,

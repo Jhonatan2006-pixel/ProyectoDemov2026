@@ -1,5 +1,6 @@
 package com.example.demov2026.data
 
+import com.example.demov2026.R
 import com.example.demov2026.model.CensoData
 import com.example.demov2026.model.CensoRequest
 import com.example.demov2026.model.CensoResponse
@@ -26,16 +27,14 @@ class CensoRepository {
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_save_census))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al registrar el censo")
-                )
+                errorApp(e, R.string.error_save_census)
             )
         }
     }
@@ -57,16 +56,14 @@ class CensoRepository {
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_load_censuses))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al obtener los censos")
-                )
+                errorApp(e, R.string.error_load_censuses)
             )
         }
     }
@@ -88,16 +85,14 @@ class CensoRepository {
             } else {
 
                 Result.failure(
-                    Exception(response.message)
+                    ErrorApp(mensajeDelServidor(response.message, R.string.error_load_bulk))
                 )
             }
 
         } catch (e: Exception) {
 
             Result.failure(
-                Exception(
-                    mensajeDeError(e, "Error al obtener los censos masivos")
-                )
+                errorApp(e, R.string.error_load_bulk)
             )
         }
     }

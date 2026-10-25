@@ -1,5 +1,10 @@
 package com.example.demov2026.ui.theme.Login
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,18 +14,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +46,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.demov2026.R
 import com.example.demov2026.data.TokenManager
@@ -67,6 +76,52 @@ fun LoginScreen(
 
     val state by loginViewModel.state.collectAsState()
 
+    // Cámara para la selfie del login con rostro
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+
+        if (bitmap != null) {
+            loginViewModel.onLoginFacial(bitmap)
+        }
+    }
+
+    // Permiso de cámara
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+
+        if (concedido) {
+            cameraLauncher.launch(null)
+        }
+    }
+
+    fun abrirCamara() {
+
+        // Sin correo no se sabe con qué foto de perfil comparar
+        if (state.email.isBlank()) {
+            loginViewModel.avisarFaltaCorreo()
+            return
+        }
+
+        val permisoConcedido =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+
+        if (permisoConcedido) {
+
+            cameraLauncher.launch(null)
+
+        } else {
+
+            permissionLauncher.launch(
+                Manifest.permission.CAMERA
+            )
+        }
+    }
+
     LaunchedEffect(state.loginExito, state.rol) {
         if (state.loginExito && state.rol.isNotEmpty()) {
 
@@ -79,10 +134,19 @@ fun LoginScreen(
         }
     }
 
+    val scrollState = rememberScrollState()
+
+    // En pantallas pequeñas el mensaje queda abajo: se baja para que se vea
+    LaunchedEffect(state.mensaje) {
+        if (state.mensaje != null) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -195,6 +259,35 @@ fun LoginScreen(
             }
         }
 
+        Text(
+            text = stringResource(R.string.face_login_or),
+            modifier = Modifier.padding(vertical = 8.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        // Login biométrico: selfie comparada con la foto de perfil
+        OutlinedButton(
+            onClick = {
+                abrirCamara()
+            },
+            enabled = !state.cargando,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+
+            Icon(
+                imageVector = Icons.Filled.Face,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(stringResource(R.string.face_login_button))
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
@@ -203,12 +296,12 @@ fun LoginScreen(
             Text(stringResource(R.string.create_account))
         }
 
-        if (state.mensaje.isNotEmpty()) {
+        state.mensaje?.let { mensaje ->
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = state.mensaje,
+                text = stringResource(mensaje),
                 textAlign = TextAlign.Center,
                 color = if (state.loginExito) {
                     MaterialTheme.colorScheme.primary

@@ -388,14 +388,14 @@ fun ProfileScreen(
                 )
             }
 
-            if (state.mensaje.isNotEmpty()) {
+            state.mensaje?.let { mensaje ->
 
                 Spacer(
                     modifier = Modifier.height(16.dp)
                 )
 
                 Text(
-                    text = state.mensaje,
+                    text = stringResource(mensaje),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

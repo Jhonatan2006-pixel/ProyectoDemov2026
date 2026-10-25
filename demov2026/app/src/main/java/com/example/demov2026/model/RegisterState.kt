@@ -1,12 +1,14 @@
 package com.example.demov2026.model
 
+import androidx.annotation.StringRes
+
 data class RegisterState(
     val nombre: String = "",
     val email: String = "",
     val telefono: String = "",
     val password: String = "",
     val confirmarPassword: String = "",
-    val mensaje: String = "",
+    @StringRes val mensaje: Int? = null,
     val cargando: Boolean = false,
     val registroExito: Boolean = false,
 
@@ -20,5 +22,5 @@ data class RegisterState(
     val mostrarDialogoCodigo: Boolean = false,
     val codigoIngresado: String = "",
     val verificandoCodigo: Boolean = false,
-    val mensajeCodigo: String = ""
+    @StringRes val mensajeCodigo: Int? = null
 )

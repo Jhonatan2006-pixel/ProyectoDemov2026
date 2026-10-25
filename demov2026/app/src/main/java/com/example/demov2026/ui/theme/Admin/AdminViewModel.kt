@@ -1,5 +1,8 @@
 package com.example.demov2026.ui.theme.Admin
 
+import androidx.annotation.StringRes
+import com.example.demov2026.data.textoDeError
+import com.example.demov2026.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demov2026.data.CensoRepository
@@ -12,7 +15,7 @@ import kotlinx.coroutines.launch
 data class AdminState(
     val cargando: Boolean = false,
     val censos: List<CensoData> = emptyList(),
-    val mensaje: String = ""
+    @StringRes val mensaje: Int? = null
 )
 
 class AdminViewModel(
@@ -46,7 +49,7 @@ class AdminViewModel(
 
         if (token.isNullOrBlank()) {
             _state.value = AdminState(
-                mensaje = "No se encontró una sesión activa"
+                mensaje = R.string.msg_no_session
             )
             return
         }
@@ -67,9 +70,9 @@ class AdminViewModel(
                     cargando = false,
                     censos = listaCensos,
                     mensaje = if (listaCensos.isEmpty()) {
-                        "No hay censos para mostrar"
+                        R.string.msg_no_censuses
                     } else {
-                        "Censos obtenidos correctamente"
+                        null
                     }
                 )
 
@@ -77,8 +80,7 @@ class AdminViewModel(
 
                 _state.value = AdminState(
                     cargando = false,
-                    mensaje = resultado.exceptionOrNull()?.message
-                        ?: "Error al obtener los censos"
+                    mensaje = resultado.exceptionOrNull().textoDeError(R.string.error_load_censuses)
                 )
             }
         }

@@ -1,5 +1,7 @@
 package com.example.demov2026.ui.theme.Censista
 
+import com.example.demov2026.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +31,7 @@ fun CensistaScreen(
 
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Panel del Censista")
+                    Text(stringResource(R.string.censista_panel_title))
                 }
             )
         }
@@ -44,22 +46,22 @@ fun CensistaScreen(
         ) {
 
             Text(
-                text = "Seleccione una opción",
+                text = stringResource(R.string.select_option),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             OpcionPanel(
                 icono = Icons.Filled.Create,
-                titulo = "Capturar censo",
-                descripcion = "Registrar los datos de un hogar",
+                titulo = stringResource(R.string.capture_option),
+                descripcion = stringResource(R.string.capture_option_desc),
                 onClick = onCapturarCenso
             )
 
             OpcionPanel(
                 icono = Icons.Filled.Person,
-                titulo = "Mi perfil",
-                descripcion = "Datos de la cuenta y foto de perfil",
+                titulo = stringResource(R.string.my_profile),
+                descripcion = stringResource(R.string.my_profile_option_desc),
                 onClick = onPerfil
             )
         }

@@ -1,14 +1,25 @@
 <resources>
 
+    <!-- General -->
     <string name="app_name">demov2026</string>
+    <string name="select_option">Seleccione una opción</string>
+    <string name="close">Cerrar</string>
+    <string name="back">Regresar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="verify">Verificar</string>
 
-    <!-- Inicio de sesión -->
+    <!-- Login -->
     <string name="login_title">Iniciar Sesión</string>
+    <string name="app_subtitle">Censo de hogares</string>
     <string name="email">Correo</string>
     <string name="password">Contraseña</string>
     <string name="login_button">Ingresar</string>
     <string name="create_account">Crear una cuenta</string>
-    <string name="app_subtitle">Censo de hogares</string>
+
+    <!-- Login con rostro -->
+    <string name="face_login_button">Iniciar sesión con mi rostro</string>
+    <string name="face_login_needs_email">Escribe tu correo para iniciar sesión con tu rostro</string>
+    <string name="face_login_or">o</string>
 
     <!-- Registro -->
     <string name="register_title">Crear Cuenta</string>
@@ -24,18 +35,106 @@
     <string name="admin_code_text">Ingresa el código que confirma que fuiste aprobado como administrador.</string>
     <string name="admin_code_label">Código</string>
     <string name="admin_code_verified">Código de administrador verificado</string>
-    <string name="verify">Verificar</string>
-    <string name="cancel">Cancelar</string>
 
     <!-- Perfil -->
     <string name="my_profile">Mi Perfil</string>
+    <string name="my_profile_option_desc">Datos de la cuenta y foto de perfil</string>
     <string name="profile_photo">Foto de perfil</string>
     <string name="profile_photo_description">Foto de perfil</string>
     <string name="photo_question">¿Deseas tomar una foto o seleccionar una imagen de la galería?</string>
     <string name="take_photo">Tomar foto</string>
     <string name="gallery">Galería</string>
     <string name="logout">Cerrar Sesión</string>
-    <string name="back">Regresar</string>
     <string name="change_photo_hint">Toca la foto para cambiarla</string>
+
+    <!-- Administrador -->
+    <string name="admin_panel_title">Panel del Administrador</string>
+    <string name="admin_map_option">Ver censos en mapa</string>
+    <string name="admin_map_option_desc">Todos los censos capturados</string>
+    <string name="admin_bulk_option">Ver censos masivos</string>
+    <string name="admin_bulk_option_desc">Censos de carga masiva agrupados por zona</string>
+    <string name="map_all_title">Censos capturados</string>
+    <string name="map_bulk_title">Censos masivos</string>
+    <string name="map_loading">Cargando censos…</string>
+    <string name="map_count">%1$d censos en el mapa</string>
+    <string name="census_details_title">Datos del censo</string>
+    <string name="census_detail_name">Nombre: %1$s</string>
+    <string name="census_detail_last_name">Apellido: %1$s</string>
+    <string name="census_detail_members">Total de miembros: %1$d</string>
+    <string name="census_detail_tvs">Cantidad de televisiones: %1$d</string>
+    <string name="census_detail_load_type">Tipo de carga: %1$s</string>
+    <string name="census_detail_latitude">Latitud: %1$s</string>
+    <string name="census_detail_longitude">Longitud: %1$s</string>
+    <string name="load_type_normal">Normal</string>
+    <string name="load_type_bulk">Masiva</string>
+
+    <!-- Censista -->
+    <string name="censista_panel_title">Panel del Censista</string>
+    <string name="capture_option">Capturar censo</string>
+    <string name="capture_option_desc">Registrar los datos de un hogar</string>
+    <string name="household_data">Datos del hogar</string>
+    <string name="last_name">Apellido</string>
+    <string name="total_members">Total de miembros</string>
+    <string name="tv_count">Cantidad de televisiones</string>
+    <string name="household_location">Ubicación del hogar</string>
+    <string name="location_obtained">Ubicación obtenida correctamente</string>
+    <string name="latitude_value">Latitud: %1$s</string>
+    <string name="longitude_value">Longitud: %1$s</string>
+    <string name="location_pending">Ubicación pendiente</string>
+    <string name="update_location">Actualizar ubicación</string>
+    <string name="get_location">Obtener ubicación</string>
+    <string name="save_census">Guardar censo</string>
+    <string name="location_permission_needed">Se necesita el permiso de ubicación</string>
+    <string name="location_enable_device">Active la ubicación del dispositivo</string>
+    <string name="location_searching">Buscando ubicación…</string>
+    <string name="location_failed">No se pudo obtener la ubicación. Intente de nuevo</string>
+
+    <!-- Mensajes -->
+    <string name="msg_complete_fields">Complete todos los campos</string>
+    <string name="msg_invalid_members">El total de miembros no es válido</string>
+    <string name="msg_invalid_tvs">La cantidad de televisiones no es válida</string>
+    <string name="msg_get_location_first">Primero debe obtener la ubicación</string>
+    <string name="msg_no_session">No se encontró una sesión activa</string>
+    <string name="msg_census_saved">Censo registrado correctamente</string>
+    <string name="msg_no_censuses">No hay censos para mostrar</string>
+    <string name="msg_no_user">No hay usuario autenticado</string>
+    <string name="msg_no_photo">No hay ninguna foto para guardar</string>
+    <string name="msg_saving_photo">Guardando foto…</string>
+    <string name="msg_photo_saved">Foto de perfil guardada correctamente</string>
+    <string name="msg_logged_out">Sesión cerrada</string>
+    <string name="msg_enter_admin_code">Ingrese el código de administrador</string>
+    <string name="msg_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="msg_user_registered">Usuario registrado correctamente</string>
+    <string name="msg_login_success">Inicio de sesión correcto</string>
+
+    <!-- Errores -->
+    <string name="error_no_connection">No se pudo conectar con el servidor</string>
+    <string name="error_generic">Ocurrió un error. Intente de nuevo</string>
+    <string name="error_login">No se pudo iniciar sesión</string>
+    <string name="error_register">No se pudo registrar el usuario</string>
+    <string name="error_verify_code">No se pudo verificar el código</string>
+    <string name="error_profile">No se pudo cargar el perfil</string>
+    <string name="error_save_photo">No se pudo guardar la foto</string>
+    <string name="error_save_census">No se pudo registrar el censo</string>
+    <string name="error_load_censuses">No se pudieron obtener los censos</string>
+    <string name="error_load_bulk">No se pudieron obtener los censos masivos</string>
+    <string name="error_credentials">Correo o contraseña incorrectos</string>
+    <string name="error_email_password_required">Correo y contraseña son obligatorios</string>
+    <string name="error_required_fields">Nombre, correo y contraseña son obligatorios</string>
+    <string name="error_email_registered">El correo ya está registrado</string>
+    <string name="error_admin_code">Código de administrador incorrecto</string>
+    <string name="error_invalid_role">El rol seleccionado no es válido</string>
+    <string name="error_session">Tu sesión expiró. Inicia sesión de nuevo</string>
+    <string name="error_only_censistas">Acceso permitido únicamente para censistas</string>
+    <string name="error_only_admins">Acceso permitido únicamente para administradores</string>
+    <string name="error_census_data_required">Todos los datos del censo son obligatorios</string>
+    <string name="error_invalid_amounts">Las cantidades ingresadas no son válidas</string>
+    <string name="error_no_photo_received">No se recibió ninguna foto</string>
+    <string name="error_user_not_found">Usuario no encontrado</string>
+    <string name="error_face_login">No se pudo iniciar sesión con tu rostro</string>
+    <string name="error_face_no_match">Tu rostro no coincide con la foto de perfil</string>
+    <string name="error_face_no_profile_photo">Este usuario no tiene foto de perfil para comparar</string>
+    <string name="error_face_not_detected">No se detectó un rostro en la foto</string>
+    <string name="error_face_service">El servicio de reconocimiento facial no está disponible</string>
 
 </resources>

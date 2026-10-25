@@ -105,11 +105,9 @@ fun RegisterScreen(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
                         ),
-                        isError = state.mensajeCodigo.isNotEmpty(),
+                        isError = state.mensajeCodigo != null,
                         supportingText = {
-                            if (state.mensajeCodigo.isNotEmpty()) {
-                                Text(state.mensajeCodigo)
-                            }
+                            state.mensajeCodigo?.let { Text(stringResource(it)) }
                         },
                         enabled = !state.verificandoCodigo,
                         singleLine = true,
@@ -388,12 +386,12 @@ fun RegisterScreen(
             Text(stringResource(R.string.already_have_account))
         }
 
-        if (state.mensaje.isNotEmpty()) {
+        state.mensaje?.let { mensaje ->
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = state.mensaje,
+                text = stringResource(mensaje),
                 textAlign = TextAlign.Center,
                 color = if (state.registroExito) {
                     MaterialTheme.colorScheme.primary

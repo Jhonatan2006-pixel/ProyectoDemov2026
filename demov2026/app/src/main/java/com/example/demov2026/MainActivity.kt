@@ -1,5 +1,6 @@
 package com.example.demov2026
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -100,7 +101,7 @@ class MainActivity : ComponentActivity() {
                 // Aviso para el censista mientras se busca la ubicación
                 // o cuando no fue posible obtenerla
                 var mensajeUbicacion by remember {
-                    mutableStateOf("")
+                    mutableStateOf<Int?>(null)
                 }
 
                 fun obtenerUbicacion() {
@@ -122,7 +123,7 @@ class MainActivity : ComponentActivity() {
                         permisoFine != PackageManager.PERMISSION_GRANTED &&
                         permisoCoarse != PackageManager.PERMISSION_GRANTED
                     ) {
-                        mensajeUbicacion = "Se necesita el permiso de ubicación"
+                        mensajeUbicacion = R.string.location_permission_needed
                         return
                     }
 
@@ -137,7 +138,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         if (proveedores.isEmpty()) {
-                            mensajeUbicacion = "Active la ubicación del dispositivo"
+                            mensajeUbicacion = R.string.location_enable_device
                             return
                         }
 
@@ -149,13 +150,13 @@ class MainActivity : ComponentActivity() {
                         if (ubicacion != null) {
                             latitud = ubicacion.latitude
                             longitud = ubicacion.longitude
-                            mensajeUbicacion = ""
+                            mensajeUbicacion = null
                             return
                         }
 
                         // El dispositivo no tiene una ubicación reciente
                         // guardada: se solicita una nueva
-                        mensajeUbicacion = "Buscando ubicación..."
+                        mensajeUbicacion = R.string.location_searching
 
                         LocationManagerCompat.getCurrentLocation(
                             locationManager,
@@ -167,10 +168,10 @@ class MainActivity : ComponentActivity() {
                             if (nuevaUbicacion != null) {
                                 latitud = nuevaUbicacion.latitude
                                 longitud = nuevaUbicacion.longitude
-                                mensajeUbicacion = ""
+                                mensajeUbicacion = null
                             } else {
                                 mensajeUbicacion =
-                                    "No se pudo obtener la ubicación. Intente de nuevo"
+                                    R.string.location_failed
                             }
                         }
 
@@ -193,7 +194,7 @@ class MainActivity : ComponentActivity() {
                         if (permisoFine || permisoCoarse) {
                             obtenerUbicacion()
                         } else {
-                            mensajeUbicacion = "Se necesita el permiso de ubicación"
+                            mensajeUbicacion = R.string.location_permission_needed
                         }
                     }
 
@@ -262,7 +263,7 @@ class MainActivity : ComponentActivity() {
                                 onCensoGuardado = {
                                     latitud = null
                                     longitud = null
-                                    mensajeUbicacion = ""
+                                    mensajeUbicacion = null
                                 },
 
                                 latitud = latitud,
@@ -303,7 +304,7 @@ class MainActivity : ComponentActivity() {
                         "mapaCensos" -> {
 
                             MapaCensosScreen(
-                                titulo = "Censos capturados",
+                                titulo = stringResource(R.string.map_all_title),
                                 censos = adminState.censos,
                                 cargando = adminState.cargando,
                                 mensaje = adminState.mensaje,
@@ -322,7 +323,7 @@ class MainActivity : ComponentActivity() {
                         "mapaCensosMasivos" -> {
 
                             MapaCensosScreen(
-                                titulo = "Censos masivos",
+                                titulo = stringResource(R.string.map_bulk_title),
                                 censos = adminState.censos,
                                 cargando = adminState.cargando,
                                 mensaje = adminState.mensaje,
@@ -363,7 +364,7 @@ class MainActivity : ComponentActivity() {
                                 onCapturarCenso = {
                                     latitud = null
                                     longitud = null
-                                    mensajeUbicacion = ""
+                                    mensajeUbicacion = null
                                     censoViewModel.limpiarEstado()
                                     pantalla = "capturarCenso"
                                 },

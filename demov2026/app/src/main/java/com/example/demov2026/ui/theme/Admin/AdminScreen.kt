@@ -1,5 +1,7 @@
 package com.example.demov2026.ui.theme.Admin
 
+import com.example.demov2026.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +33,7 @@ fun AdminScreen(
 
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Panel del Administrador")
+                    Text(stringResource(R.string.admin_panel_title))
                 }
             )
         }
@@ -46,29 +48,29 @@ fun AdminScreen(
         ) {
 
             Text(
-                text = "Seleccione una opción",
+                text = stringResource(R.string.select_option),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             OpcionPanel(
                 icono = Icons.Filled.Place,
-                titulo = "Ver censos en mapa",
-                descripcion = "Todos los censos capturados",
+                titulo = stringResource(R.string.admin_map_option),
+                descripcion = stringResource(R.string.admin_map_option_desc),
                 onClick = onVerCensos
             )
 
             OpcionPanel(
                 icono = Icons.Filled.LocationOn,
-                titulo = "Ver censos masivos",
-                descripcion = "Censos de carga masiva agrupados por zona",
+                titulo = stringResource(R.string.admin_bulk_option),
+                descripcion = stringResource(R.string.admin_bulk_option_desc),
                 onClick = onVerCensosMasivos
             )
 
             OpcionPanel(
                 icono = Icons.Filled.Person,
-                titulo = "Mi perfil",
-                descripcion = "Datos de la cuenta y foto de perfil",
+                titulo = stringResource(R.string.my_profile),
+                descripcion = stringResource(R.string.my_profile_option_desc),
                 onClick = onPerfil
             )
         }

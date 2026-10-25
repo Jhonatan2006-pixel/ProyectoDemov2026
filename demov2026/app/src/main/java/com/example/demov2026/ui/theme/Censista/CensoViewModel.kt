@@ -1,5 +1,8 @@
 package com.example.demov2026.ui.theme.Censista
 
+import androidx.annotation.StringRes
+import com.example.demov2026.data.textoDeError
+import com.example.demov2026.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demov2026.data.CensoRepository
@@ -11,7 +14,7 @@ import kotlinx.coroutines.launch
 
 data class CensoState(
     val cargando: Boolean = false,
-    val mensaje: String = "",
+    @StringRes val mensaje: Int? = null,
     val guardadoExitoso: Boolean = false
 )
 
@@ -40,7 +43,7 @@ class CensoViewModel(
             cantidadTelevisiones.isBlank()
         ) {
             _state.value = CensoState(
-                mensaje = "Complete todos los campos"
+                mensaje = R.string.msg_complete_fields
             )
             return
         }
@@ -50,21 +53,21 @@ class CensoViewModel(
 
         if (miembros == null || miembros <= 0) {
             _state.value = CensoState(
-                mensaje = "El total de miembros no es válido"
+                mensaje = R.string.msg_invalid_members
             )
             return
         }
 
         if (televisiones == null || televisiones < 0) {
             _state.value = CensoState(
-                mensaje = "La cantidad de televisiones no es válida"
+                mensaje = R.string.msg_invalid_tvs
             )
             return
         }
 
         if (latitud == null || longitud == null) {
             _state.value = CensoState(
-                mensaje = "Primero debe obtener la ubicación"
+                mensaje = R.string.msg_get_location_first
             )
             return
         }
@@ -73,7 +76,7 @@ class CensoViewModel(
 
         if (token.isNullOrBlank()) {
             _state.value = CensoState(
-                mensaje = "No se encontró una sesión activa"
+                mensaje = R.string.msg_no_session
             )
             return
         }
@@ -101,15 +104,14 @@ class CensoViewModel(
             if (resultado.isSuccess) {
 
                 _state.value = CensoState(
-                    mensaje = "Censo registrado correctamente",
+                    mensaje = R.string.msg_census_saved,
                     guardadoExitoso = true
                 )
 
             } else {
 
                 _state.value = CensoState(
-                    mensaje = resultado.exceptionOrNull()?.message
-                        ?: "Error al registrar el censo"
+                    mensaje = resultado.exceptionOrNull().textoDeError(R.string.error_save_census)
                 )
             }
         }

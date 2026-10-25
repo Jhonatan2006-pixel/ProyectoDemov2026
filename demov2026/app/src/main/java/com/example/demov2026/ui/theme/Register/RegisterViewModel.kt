@@ -1,5 +1,7 @@
 package com.example.demov2026.ui.theme.Register
 
+import com.example.demov2026.data.textoDeError
+import com.example.demov2026.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demov2026.data.AuthRepository
@@ -72,7 +74,7 @@ class RegisterViewModel : ViewModel() {
         _state.value = _state.value.copy(
             mostrarDialogoCodigo = true,
             codigoIngresado = "",
-            mensajeCodigo = ""
+            mensajeCodigo = null
         )
     }
 
@@ -80,7 +82,7 @@ class RegisterViewModel : ViewModel() {
 
         _state.value = _state.value.copy(
             codigoIngresado = nuevoCodigo,
-            mensajeCodigo = ""
+            mensajeCodigo = null
         )
     }
 
@@ -91,7 +93,7 @@ class RegisterViewModel : ViewModel() {
             mostrarDialogoCodigo = false,
             codigoIngresado = "",
             verificandoCodigo = false,
-            mensajeCodigo = ""
+            mensajeCodigo = null
         )
     }
 
@@ -102,7 +104,7 @@ class RegisterViewModel : ViewModel() {
         if (codigo.isEmpty()) {
 
             _state.value = _state.value.copy(
-                mensajeCodigo = "Ingrese el código de administrador"
+                mensajeCodigo = R.string.msg_enter_admin_code
             )
 
             return
@@ -112,7 +114,7 @@ class RegisterViewModel : ViewModel() {
 
             _state.value = _state.value.copy(
                 verificandoCodigo = true,
-                mensajeCodigo = ""
+                mensajeCodigo = null
             )
 
             val resultado = repository.verificarCodigoAdmin(codigo)
@@ -130,15 +132,14 @@ class RegisterViewModel : ViewModel() {
                     mostrarDialogoCodigo = false,
                     codigoIngresado = "",
                     verificandoCodigo = false,
-                    mensajeCodigo = ""
+                    mensajeCodigo = null
                 )
 
             } else {
 
                 _state.value = _state.value.copy(
                     verificandoCodigo = false,
-                    mensajeCodigo = resultado.exceptionOrNull()?.message
-                        ?: "Código de administrador incorrecto"
+                    mensajeCodigo = resultado.exceptionOrNull().textoDeError(R.string.error_verify_code)
                 )
             }
         }
@@ -161,7 +162,7 @@ class RegisterViewModel : ViewModel() {
         ) {
 
             _state.value = datos.copy(
-                mensaje = "Debe completar todos los campos",
+                mensaje = R.string.msg_complete_fields,
                 registroExito = false
             )
 
@@ -171,7 +172,7 @@ class RegisterViewModel : ViewModel() {
         if (datos.password != datos.confirmarPassword) {
 
             _state.value = datos.copy(
-                mensaje = "Las contraseñas no coinciden",
+                mensaje = R.string.msg_passwords_mismatch,
                 registroExito = false
             )
 
@@ -181,7 +182,7 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
 
             _state.value = datos.copy(
-                mensaje = "",
+                mensaje = null,
                 cargando = true,
                 registroExito = false
             )
@@ -203,15 +204,14 @@ class RegisterViewModel : ViewModel() {
             if (resultado.isSuccess) {
 
                 _state.value = datos.copy(
-                    mensaje = "Usuario registrado correctamente",
+                    mensaje = R.string.msg_user_registered,
                     registroExito = true
                 )
 
             } else {
 
                 _state.value = datos.copy(
-                    mensaje = resultado.exceptionOrNull()?.message
-                        ?: "El correo ya está registrado",
+                    mensaje = resultado.exceptionOrNull().textoDeError(R.string.error_register),
                     registroExito = false
                 )
             }
