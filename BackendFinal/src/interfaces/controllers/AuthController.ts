@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
+import { respuestaInicioSesion } from "../../application_use_cases/IniciarSesion";
 import { UsuarioRepository } from "../../infrastructure/repositories/UsuarioRepository";
 
 const usuarioRepository = new UsuarioRepository();
@@ -183,31 +183,8 @@ export class AuthController {
                 });
             }
 
-            // Generar token JWT
-            const token = jwt.sign(
-    {
-        id: usuario.id,
-        email: usuario.email,
-        rol: usuario.rol
-    },
-    process.env.JWT_SECRET as string,
-    {
-        expiresIn: "2h"
-    }
-);
-            // Login correcto
-            return res.status(200).json({
-                success: true,
-                message: "Inicio de sesión correcto",
-                data: {
-                    id: usuario.id,
-                    nombre: usuario.nombre,
-                    email: usuario.email,
-                    telefono: usuario.telefono,
-                    rol: usuario.rol
-        },
-        token
-            });
+            // Login correcto: token JWT y datos del usuario
+            return res.status(200).json(respuestaInicioSesion(usuario));
 
         } catch (error) {
 
