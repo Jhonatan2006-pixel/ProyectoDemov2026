@@ -1,21 +1,24 @@
 const { RekognitionClient, GetFaceLivenessSessionResultsCommand } = require('@aws-sdk/client-rekognition');
 
-// Face Liveness solo existe en algunas regiones, como us-east-1
 const rekognitionClient = new RekognitionClient({ region: 'us-east-1' });
 
 const getLivenessResults = async (sessionId) => {
-    const command = new GetFaceLivenessSessionResultsCommand({ SessionId: sessionId });
+    const command = new GetFaceLivenessSessionResultsCommand({
+        SessionId: sessionId,
+    });
+
     const response = await rekognitionClient.send(command);
 
-    // ReferenceImage es el cuadro del video que se usa para comparar
-    // el rostro contra la foto de perfil (Lambda compareFaces)
-    const referencia = response.ReferenceImage && response.ReferenceImage.Bytes;
+    const confidence = response.Confidence ?? 'No se encontró nivel de confianza';
+    const status = response.Status ?? 'No se encontró un estado';
+    const referenceImageBytes = response.ReferenceImage?.Bytes ?? null;
 
-    return {
-        status: response.Status,
-        confidence: response.Confidence,
-        referenceImage: referencia ? Buffer.from(referencia).toString('base64') : null
-    };
+    let referenceImageBase64 = 'No se encontró imagen de referencia';
+    if (referenceImageBytes !== null) {
+        referenceImageBase64 = Buffer.from(referenceImageBytes).toString('base64');
+    }
+
+    return { confidence, status, referenceImageBase64 };
 };
 
 module.exports = { getLivenessResults };

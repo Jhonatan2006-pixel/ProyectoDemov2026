@@ -262,8 +262,11 @@ export class BiometriaController {
             let respuesta;
 
             try {
+                // La Lambda del laboratorio espera una petición HTTP:
+                // el sessionId viaja como texto JSON dentro de "body"
                 respuesta = await invocarLambda(LAMBDAS.getSessionResults(), {
-                    sessionId: sesion.session_id
+                    httpMethod: "POST",
+                    body: JSON.stringify({ sessionId: sesion.session_id })
                 });
             } catch (error) {
                 console.error("Error al invocar getSessionResults:", error);
@@ -278,29 +281,33 @@ export class BiometriaController {
                 });
             }
 
-            const { status, confidence, referenceImage } = respuesta.body;
+            // Cuando falta un dato, la Lambda devuelve un texto en su lugar
+            const { status, confidence, referenceImageBase64 } = respuesta.body;
             const confianza = typeof confidence === "number"
                 ? Number(confidence.toFixed(2))
                 : null;
+            const estado = typeof status === "string"
+                ? status.slice(0, 20)
+                : "DESCONOCIDO";
 
             const esPersonaReal = status === "SUCCEEDED" &&
                 confianza !== null &&
                 confianza >= CONFIANZA_MINIMA_VIDA &&
-                !!referenceImage;
+                referenceImageBase64 !== "No se encontró imagen de referencia";
 
             if (!esPersonaReal) {
                 return await terminarSesion(res, sesion, usuario, {
                     status: 401,
                     message: "No se superó la prueba de vida",
                     similitud: null
-                }, { estado: status, confianza });
+                }, { estado, confianza });
             }
 
             const comparacion =
-                await compararConFotoDePerfil(usuario, referenceImage);
+                await compararConFotoDePerfil(usuario, referenceImageBase64);
 
             return await terminarSesion(res, sesion, usuario, comparacion, {
-                estado: status,
+                estado,
                 confianza
             });
 
